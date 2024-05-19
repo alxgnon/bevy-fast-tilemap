@@ -119,11 +119,6 @@ fn atlas_index_to_position(index: u32) -> vec2<f32> {
     return pos;
 }
 
-/// Compute offset into the tile by world position and world position of tile reference point
-fn world_to_tile_offset(world_position: vec2<f32>, world_tile_base: vec2<f32>) -> vec2<f32> {
-    return vec2<f32>(1.0, -1.0) * (world_position - world_tile_base);
-}
-
 /// Sample tile from the tile atlas
 /// tile_index: Index of the tile in the atlas
 /// tile_offset: Offset from tile anchor point in pixel/world coordinates
@@ -194,43 +189,6 @@ fn is_valid_tile(tile: vec2<i32>) -> bool {
     }
     return true;
 }
-
-///
-///
-/// tile_index: Tile index in the atlas
-/// pos: The original map position
-/// tile_offset: The offset of the tile (in number of whole tiles) to sample from
-fn sample_neighbor_tile_index(tile_index: u32, pos_: MapPosition, tile_offset: vec2<i32>, animation_state: f32) -> vec4<f32> {
-    // Position in the neighboring tile (in world coordinates),
-    // that matches 'pos' in the original tile
-
-    var pos = pos_;
-    pos.tile = pos.tile + tile_offset;
-    return _sample_tile(tile_index, pos, animation_state);
-}
-
-/// pos: The map position to sample
-/// tile_offset: The offset of the tile (in number of whole tiles) to sample from
-fn sample_neighbor(pos: MapPosition, tile_offset: vec2<i32>, animation_state: f32) -> vec4<f32> {
-    // integral position of the neighbouring tile
-    var tile = pos.tile + tile_offset;
-    if !is_valid_tile(tile) {
-        return vec4<f32>(0.0, 0.0, 0.0, 0.0);
-    }
-
-    // kind of tile being displayed at that position
-    var tile_index = get_tile_index(tile);
-    return sample_neighbor_tile_index(tile_index, pos, tile_offset, animation_state);
-}
-
-fn desaturate(color: vec4<f32>, amount: f32) -> vec4<f32> {
-    var luminance = vec4<f32>(0.299, 0.587, 0.114, 0.0);
-    var gr = dot(luminance, color);
-    var gray = vec4<f32>(gr, gr, gr, color.a);
-    var amnt = vec4<f32>(amount, amount, amount, amount);
-    return mix(color, gray, amnt);
-}
-
 
 @fragment
 fn fragment(
