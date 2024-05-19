@@ -1,5 +1,5 @@
 use bevy::{
-    math::Vec3Swizzles,
+    math::{vec2, Vec3Swizzles},
     prelude::*,
     render::{
         mesh::MeshVertexAttribute,
@@ -192,12 +192,8 @@ where
         AsBindGroup + Reflect + Clone + Default + TypePath + ShaderType + WriteInto + ShaderSize,
 {
     /// Create a [`MapBuilder`] for configuring your map.
-    pub fn builder(
-        map_size: UVec2,
-        atlas_texture: Handle<Image>,
-        tile_size: Vec2,
-    ) -> MapBuilder<UserData> {
-        MapBuilder::new(map_size, atlas_texture, tile_size)
+    pub fn builder(map_size: UVec2, atlas_texture: Handle<Image>) -> MapBuilder<UserData> {
+        MapBuilder::new(map_size, atlas_texture, vec2(48.0, 48.0))
     }
 
     pub fn indexer_mut(&mut self) -> MapIndexer<UserData> {
