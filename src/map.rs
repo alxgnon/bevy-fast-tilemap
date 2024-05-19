@@ -12,7 +12,7 @@ use bevy::{
     sprite::{Material2d, Mesh2dHandle},
 };
 
-use crate::{map_builder::MapBuilder, map_uniform::MapUniform, shader::SHADER_HANDLE};
+use crate::{map_builder::MapBuilder, map_uniform::MapUniform, SHADER_HANDLE};
 
 const ATTRIBUTE_MAP_POSITION: MeshVertexAttribute =
     MeshVertexAttribute::new("MapPosition", 988779054, VertexFormat::Float32x2);

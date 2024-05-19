@@ -7,7 +7,7 @@ use bevy::{
 
 use crate::{
     map::{DefaultUserData, Map},
-    shader::{SHADER_CODE, SHADER_HANDLE},
+    SHADER_CODE, SHADER_HANDLE,
 };
 
 /// Plugin for fast tilemap.

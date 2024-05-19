@@ -22,12 +22,16 @@ pub mod map;
 pub mod map_builder;
 pub mod map_uniform;
 pub mod plugin;
-pub mod shader;
 pub mod tile_projection;
 
 pub use crate::{
     bundle::{MapBundleManaged, MapBundleUnmanaged},
     map::{Map, MapAttributes, MapIndexer, MeshManagedByMap},
     plugin::{CustomFastTileMapPlugin, FastTileMapPlugin},
-    tile_projection::{TileProjection, AXONOMETRIC, IDENTITY},
+    tile_projection::{TileProjection, IDENTITY},
 };
+
+use bevy::prelude::*;
+
+pub const SHADER_CODE: &str = include_str!("../assets/tilemap_shader.wgsl");
+pub const SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(15375856360518374895);

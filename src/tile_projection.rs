@@ -25,35 +25,3 @@ pub const IDENTITY: TileProjection = TileProjection {
     ),
     tile_anchor_point: vec2(0.0, 0.0),
 };
-
-/// Assumes the tiles reperesent projections of square tiles
-/// in an axonometric (eg isometric) projection,
-/// i.e. tiles are diamond-shaped,
-/// the origin is at center-left,
-/// X-axis goes from origin down to bottom-center
-/// Y-axis goes from origin up to top-center
-pub const AXONOMETRIC: TileProjection = TileProjection {
-    /*
-     *         __--X--__
-     *    __---         ---__
-     * A--__               __---
-     *      ---__     __---
-     *           --Y--
-     *
-     * (A) anchor point, vertically centered i.e. at (0.0, 0.5)
-     * in relative tile cooridinates
-     *
-     * X-axis goes from (A) to (X), i.e. in map coordinates (A)
-     * is at (0, 0) (by definition, its the anchor point),
-     * and (X) is at (1, 0) (as defined by `projection`).
-     * Analogously, Y is at (0, 1) in map coordinates.
-     *
-     */
-    projection: mat3(
-        vec3(0.5, -0.5, 0.5),
-        vec3(0.5, 0.5, -0.5),
-        vec3(0.0, -1.0, 0.0),
-    ),
-
-    tile_anchor_point: vec2(0.0, 0.5),
-};
