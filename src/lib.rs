@@ -29,7 +29,15 @@ pub use crate::{
     plugin::{CustomFastTileMapPlugin, FastTileMapPlugin},
 };
 
+use bevy::math::{mat2, mat3, vec2, vec3};
 use bevy::prelude::*;
 
 pub const SHADER_CODE: &str = include_str!("../assets/tilemap_shader.wgsl");
 pub const SHADER_HANDLE: Handle<Shader> = Handle::weak_from_u128(15375856360518374895);
+
+pub const PROJECTION: Mat3 = mat3(
+    vec3(1.0, 0.0, 0.0),
+    vec3(0.0, -1.0, 0.0),
+    vec3(0.0, 0.0, 1.0),
+);
+pub const INVERSE_PROJECTION: Mat2 = mat2(vec2(1.0, 0.0), vec2(0.0, -1.0));

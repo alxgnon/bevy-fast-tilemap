@@ -1,5 +1,5 @@
 use bevy::{
-    math::{dmat2, vec2, Vec3Swizzles},
+    math::Vec3Swizzles,
     prelude::*,
     render::{
         mesh::MeshVertexAttribute,
@@ -53,18 +53,11 @@ where
     pub(crate) atlas_texture: Handle<Image>,
 
     pub(crate) perspective_defs: Vec<String>,
-    pub(crate) perspective_underhangs: bool,
-    pub(crate) perspective_overhangs: bool,
-    pub(crate) dominance_overhangs: bool,
-    pub(crate) force_underhangs: Vec<Vec2>,
 }
 
 #[derive(Eq, PartialEq, Hash, Clone)]
 pub struct MapKey {
     pub(crate) perspective_defs: Vec<String>,
-    pub(crate) perspective_underhangs: bool,
-    pub(crate) perspective_overhangs: bool,
-    pub(crate) dominance_overhangs: bool,
 }
 
 impl<UserData> From<&Map<UserData>> for MapKey
@@ -75,9 +68,6 @@ where
     fn from(map: &Map<UserData>) -> Self {
         MapKey {
             perspective_defs: map.perspective_defs.clone(),
-            perspective_underhangs: map.perspective_underhangs,
-            perspective_overhangs: map.perspective_overhangs,
-            dominance_overhangs: map.dominance_overhangs,
         }
     }
 }
@@ -164,26 +154,6 @@ where
         descriptor.vertex.buffers = vec![vertex_layout];
 
         let fragment = descriptor.fragment.as_mut().unwrap();
-
-        if key.bind_group_data.perspective_underhangs {
-            fragment.shader_defs.push(ShaderDefVal::Bool(
-                "PERSPECTIVE_UNDERHANGS".to_string(),
-                true,
-            ));
-        }
-
-        if key.bind_group_data.perspective_overhangs {
-            fragment.shader_defs.push(ShaderDefVal::Bool(
-                "PERSPECTIVE_OVERHANGS".to_string(),
-                true,
-            ));
-        }
-
-        if key.bind_group_data.dominance_overhangs {
-            fragment
-                .shader_defs
-                .push(ShaderDefVal::Bool("DOMINANCE_OVERHANGS".to_string(), true));
-        }
 
         for def in key.bind_group_data.perspective_defs.iter() {
             fragment
@@ -286,51 +256,6 @@ where
 
         self.map_uniform
             .update_atlas_size(atlas_texture.size().as_vec2())
-    }
-
-    pub(crate) fn update_inverse_projection(&mut self) {
-        let projection2d = dmat2(
-            self.map_uniform.projection.x_axis.xy().as_dvec2(),
-            self.map_uniform.projection.y_axis.xy().as_dvec2(),
-        );
-
-        self.map_uniform.inverse_projection = projection2d.inverse().as_mat2();
-
-        // Iterate through the four "straight" neighboring map directions, and figure
-        // out which of these have negative Z-values after projection to the world.
-        // These are exactly the directions we should "overlap" in the shader in perspective
-        // overhang mode.
-        let offsets = [
-            (vec2(0.0, -1.0), "ZN"),
-            (vec2(-1.0, -1.0), "NN"),
-            (vec2(-1.0, 0.0), "NZ"),
-            (vec2(-1.0, 1.0), "NP"),
-            (vec2(0.0, 1.0), "ZP"),
-            (vec2(1.0, 1.0), "PP"),
-            (vec2(1.0, 0.0), "PZ"),
-            (vec2(1.0, -1.0), "PN"),
-        ];
-
-        let mut defs = Vec::new();
-
-        if self.force_underhangs.is_empty() {
-            // Derive underhangs from perspective (z < 0) values
-            for (offset, def) in offsets.iter() {
-                if self.map_uniform.map_to_local(offset.extend(0.0)).z < 0.0 {
-                    defs.push(format!("PERSPECTIVE_UNDER_{}", def));
-                }
-            }
-        } else {
-            // Use forced underhangs
-            for direction in self.force_underhangs.iter() {
-                for (offset, def) in offsets.iter() {
-                    if direction.angle_between(*offset) == 0.0 {
-                        defs.push(format!("PERSPECTIVE_UNDER_{}", def));
-                    }
-                }
-            }
-        }
-        self.perspective_defs = defs;
     }
 } // impl Map
 

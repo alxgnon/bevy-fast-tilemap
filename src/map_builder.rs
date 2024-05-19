@@ -33,9 +33,6 @@ where
                     tile_size,
                     ..default()
                 },
-                perspective_overhangs: true,
-                perspective_underhangs: true,
-                dominance_overhangs: false,
                 ..default()
             },
         }
@@ -57,9 +54,6 @@ where
                     tile_size,
                     ..default()
                 },
-                perspective_overhangs: true,
-                perspective_underhangs: true,
-                dominance_overhangs: false,
                 user_data,
                 ..default()
             },
@@ -87,53 +81,6 @@ where
         self
     }
 
-    /// Render this map in "dominance" overhang mode.
-    /// "Dominance" overhang draws the overlap of tiles depending on their index in the tile atlas.
-    /// Tiles with higher index will be drawn on top of tiles with lower index.
-    /// For this we draw in the "padding" area of the tile atlas.
-    pub fn with_dominance_overhang(mut self) -> Self {
-        self.map.dominance_overhangs = true;
-        self.map.perspective_overhangs = false;
-        self.map.perspective_underhangs = false;
-        self
-    }
-
-    /// Render this map in "perspective" overhang mode.
-    /// "Perspective" overhang draws the overlap of tiles depending on their "depth" that is the
-    /// y-axis of their world position (tiles higher up are considered further away).
-    pub fn with_perspective_overhang(mut self) -> Self {
-        self.map.dominance_overhangs = false;
-        self.map.perspective_overhangs = true;
-        self.map.perspective_underhangs = true;
-        self
-    }
-
-    /// Specify directions (eg vec2(-1.0, 1.0)) for underhangs.
-    ///
-    /// Use this to manually specify the *under*hang directions you want to use
-    /// (overhangs are implicitly the opposite direction).
-    /// This can be useful if you are using IDENTITY projection but still want some
-    /// over/underhangs other than dominance.
-    pub fn with_forced_underhangs(mut self, underhangs: Vec<Vec2>) -> Self {
-        self.map.dominance_overhangs = false;
-        self.map.perspective_underhangs = true;
-        self.map.perspective_overhangs = true;
-        self.map.force_underhangs = underhangs;
-        self
-    }
-
-    pub fn with_overhangs(
-        mut self,
-        dominance: bool,
-        perspective_under: bool,
-        perspective_over: bool,
-    ) -> Self {
-        self.map.dominance_overhangs = dominance;
-        self.map.perspective_underhangs = perspective_under;
-        self.map.perspective_overhangs = perspective_over;
-        self
-    }
-
     /// Build the map component.
     pub fn build(self) -> Map<UserData> {
         self.build_and_initialize(|_| {})
@@ -153,7 +100,6 @@ where
 
         initializer(&mut MapIndexer::<UserData> { map: &mut self.map });
 
-        self.map.update_inverse_projection();
         self.map.map_uniform.update_world_size();
 
         self.map

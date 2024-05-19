@@ -1,5 +1,5 @@
 use bevy::{
-    math::{mat3, vec2, vec3, Vec3Swizzles},
+    math::{vec2, vec3, Vec3Swizzles},
     prelude::*,
     render::render_resource::{AsBindGroup, ShaderType},
 };
@@ -43,16 +43,6 @@ pub struct MapUniform {
     /// (derived)
     pub(crate) n_tiles: UVec2,
 
-    /// (derived) local world pos -> fractional 2d map index
-    ///
-    /// Note that the main use case for the inverse is to transform 2d world coordinates
-    /// (eg from mouse cursor) to 2d map coordinates with some assumption about how we choose the z
-    /// coordinate.
-    /// An inverse of the 3d projection matrix here would assume that you feed in the correct z
-    /// coordinate and otherwise give wrong results, hence we only invert the 2d part
-    /// and let the caller handle management of z.
-    pub(crate) inverse_projection: Mat2,
-
     /// (derived) global world pos -> fractional 2d map index
     pub(crate) global_inverse_transform_matrix: Mat3,
     pub(crate) global_inverse_transform_translation: Vec3,
@@ -68,17 +58,12 @@ impl Default for MapUniform {
             outer_padding_topleft: default(),
             outer_padding_bottomright: default(),
             tile_anchor_point: vec2(0.0, 0.0),
-            projection: mat3(
-                vec3(1.0, 0.0, 0.0),
-                vec3(0.0, -1.0, 0.0),
-                vec3(0.0, 0.0, 1.0),
-            ),
+            projection: crate::PROJECTION,
             global_transform_matrix: default(),
             global_transform_translation: default(),
             world_size: default(),
             world_offset: default(),
             n_tiles: default(),
-            inverse_projection: default(),
             global_inverse_transform_matrix: default(),
             global_inverse_transform_translation: default(),
         }
@@ -108,7 +93,8 @@ impl MapUniform {
     /// and always project to z=0 on the map.
     /// This behavior might change in the future
     pub(crate) fn local_to_map(&self, local: Vec3) -> Vec3 {
-        (self.inverse_projection * ((local.xy() - self.world_offset) / self.tile_size)).extend(0.0)
+        (crate::INVERSE_PROJECTION * ((local.xy() - self.world_offset) / self.tile_size))
+            .extend(0.0)
     }
 
     pub(crate) fn world_to_map(&self, world: Vec3) -> Vec3 {
