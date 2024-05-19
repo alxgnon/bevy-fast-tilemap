@@ -1,10 +1,8 @@
 use bevy::{
-    math::{vec2, vec3, Vec3Swizzles},
+    math::{mat3, vec2, vec3, Vec3Swizzles},
     prelude::*,
     render::render_resource::{AsBindGroup, ShaderType},
 };
-
-use crate::tile_projection::IDENTITY;
 
 #[derive(ShaderType, Clone, Debug, Reflect, AsBindGroup)]
 pub struct MapUniform {
@@ -69,8 +67,12 @@ impl Default for MapUniform {
             inner_padding: default(),
             outer_padding_topleft: default(),
             outer_padding_bottomright: default(),
-            tile_anchor_point: IDENTITY.tile_anchor_point,
-            projection: IDENTITY.projection,
+            tile_anchor_point: vec2(0.0, 0.0),
+            projection: mat3(
+                vec3(1.0, 0.0, 0.0),
+                vec3(0.0, -1.0, 0.0),
+                vec3(0.0, 0.0, 1.0),
+            ),
             global_transform_matrix: default(),
             global_transform_translation: default(),
             world_size: default(),

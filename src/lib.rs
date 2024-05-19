@@ -22,13 +22,11 @@ pub mod map;
 pub mod map_builder;
 pub mod map_uniform;
 pub mod plugin;
-pub mod tile_projection;
 
 pub use crate::{
     bundle::{MapBundleManaged, MapBundleUnmanaged},
     map::{Map, MapAttributes, MapIndexer, MeshManagedByMap},
     plugin::{CustomFastTileMapPlugin, FastTileMapPlugin},
-    tile_projection::{TileProjection, IDENTITY},
 };
 
 use bevy::prelude::*;

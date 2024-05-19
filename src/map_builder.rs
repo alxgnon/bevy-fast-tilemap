@@ -8,8 +8,6 @@ use bevy::{
     render::render_resource::{encase::internal::WriteInto, AsBindGroup, ShaderSize, ShaderType},
 };
 
-use crate::tile_projection::TileProjection;
-
 /// Builder for constructing a map component. This is usually the preferred way of constructing.
 pub struct MapBuilder<UserData = DefaultUserData>
 where
@@ -70,14 +68,6 @@ where
 
     pub fn with_user_data(mut self, new_user_data: UserData) -> Self {
         self.map.user_data = new_user_data;
-        self
-    }
-
-    /// Us the given map projection for rendering. Default is [`crate::tile_projection::IDENTITY`],
-    /// which will render the tiles in rectangular layout.
-    pub fn with_projection(mut self, projection: TileProjection) -> Self {
-        self.map.map_uniform.projection = projection.projection;
-        self.map.map_uniform.tile_anchor_point = projection.tile_anchor_point;
         self
     }
 
