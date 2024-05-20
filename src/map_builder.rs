@@ -65,22 +65,6 @@ where
         self
     }
 
-    /// Specify the padding in the `atlas_texture`.
-    /// `inner`: Padding between the tiles,
-    /// `topleft`: Padding to top and left of the tile atlas,
-    /// `bottomright`: Padding to bottom and right of the atlas.
-    ///
-    /// Note that it is crucial that these values are precisely correct,
-    /// we use them internally to determine how many tiles there are in the atlas in each
-    /// direction, if that does not produce a number close to an integer,
-    /// you will get a `panic` when the tile atlas is loaded.
-    pub fn with_padding(mut self, inner: Vec2, topleft: Vec2, bottomright: Vec2) -> Self {
-        self.map.map_uniform.inner_padding = inner;
-        self.map.map_uniform.outer_padding_topleft = topleft;
-        self.map.map_uniform.outer_padding_bottomright = bottomright;
-        self
-    }
-
     /// Build the map component.
     pub fn build(self) -> Map<UserData> {
         self.build_and_initialize(|_| {})

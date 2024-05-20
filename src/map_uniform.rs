@@ -17,13 +17,6 @@ pub struct MapUniform {
     /// Size of each tile, in pixels.
     pub(crate) tile_size: Vec2,
 
-    /// Padding between tiles in atlas.
-    pub(crate) inner_padding: Vec2,
-
-    /// Padding at atlas top/left and bottom/right
-    pub(crate) outer_padding_topleft: Vec2,
-    pub(crate) outer_padding_bottomright: Vec2,
-
     /// Relative anchor point position in a tile (in [0..1]^2)
     pub(crate) tile_anchor_point: Vec2,
 
@@ -54,9 +47,6 @@ impl Default for MapUniform {
             map_size: default(),
             atlas_size: default(),
             tile_size: default(),
-            inner_padding: default(),
-            outer_padding_topleft: default(),
-            outer_padding_bottomright: default(),
             tile_anchor_point: vec2(0.0, 0.0),
             projection: crate::PROJECTION,
             global_transform_matrix: default(),
@@ -158,8 +148,8 @@ impl MapUniform {
     }
 
     fn update_n_tiles(&mut self) {
-        let inner = self.atlas_size - self.outer_padding_topleft - self.outer_padding_bottomright;
-        let n_tiles = (inner + self.inner_padding) / (self.inner_padding + self.tile_size);
+        let inner = self.atlas_size;
+        let n_tiles = inner / self.tile_size;
 
         let eps = 0.01;
         if (n_tiles.x - n_tiles.x.round()).abs() > eps

@@ -22,13 +22,6 @@ struct Map {
     /// Size of each tile, in pixels.
     tile_size: vec2<f32>,
 
-    /// Padding between tiles in atlas.
-    inner_padding: vec2<f32>,
-
-    /// Padding at atlas top/left and bottom/right
-    outer_padding_topleft: vec2<f32>,
-    outer_padding_bottomright: vec2<f32>,
-
     /// Relative anchor point position in a tile (in [0..1]^2)
     tile_anchor_point: vec2<f32>,
 
@@ -115,7 +108,7 @@ fn atlas_index_to_position(index: u32) -> vec2<f32> {
     var index_x = index_f - index_y * f32(map.n_tiles.x);
     var index2d = vec2<f32>(index_x, index_y);
 
-    var pos = index2d * (map.tile_size + map.inner_padding) + map.outer_padding_topleft;
+    var pos = index2d * map.tile_size;
     return pos;
 }
 
