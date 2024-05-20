@@ -8,42 +8,16 @@ struct ExtractIn {
     animation_state: f32,
 };
 
-#[user_code]
-
 struct Map {
-    /// Size of the map, in tiles.
-    /// Will be derived from underlying map texture.
     map_size: vec2<u32>,
-
-    /// Size of the tile atlas, in pixels.
-    /// Will be derived from the tile atlas texture.
     atlas_size: vec2<f32>,
-
-    /// Size of each tile, in pixels.
     tile_size: vec2<f32>,
-
-    /// Relative anchor point position in a tile (in [0..1]^2)
     tile_anchor_point: vec2<f32>,
-
-    /// fractional 2d map index -> relative local world pos
     projection: mat3x3<f32>,
-
-    /// Global transform of the entity holding the map as transformation matrix & offset.
-    /// This is currently redundant with mesh.model,
-    /// which should represent the same info as a 4x4 affine matrix, but we consider it a bit
-    /// more consistent in conjunction with the inverse below. May be removed in the future.
     global_transform_matrix: mat3x3<f32>,
     global_transform_translation: vec3<f32>,
-
-    // -----
-    /// [derived] Size of the map in world units necessary to display
-    /// all tiles according to projection.
     world_size: vec2<f32>,
-
-    /// [derived] Offset of the projected map in world coordinates
     world_offset: vec2<f32>,
-
-    /// [derived] Number of tiles in atlas
     n_tiles: vec2<u32>,
 
     /// [derived] Inverse of global transform of the entity holding the map as transformation matrix & offset.
@@ -54,9 +28,6 @@ struct Map {
 @group(2) @binding(0)
 var<uniform> map: Map;
 
-@group(2) @binding(1)
-var<uniform> user_data: UserData;
-
 @group(2) @binding(100)
 var<storage> map_texture: array<u32>;
 
@@ -65,7 +36,6 @@ var atlas_texture: texture_2d<f32>;
 
 @group(2) @binding(102)
 var atlas_sampler: sampler;
-
 
 struct Vertex {
     @builtin(instance_index) instance_index: u32,
@@ -120,14 +90,12 @@ fn _sample_tile(
     pos: MapPosition,
     animation_state: f32,
 ) -> vec4<f32> {
-
     var e: ExtractIn;
     e.tile_index = tile_index;
     e.tile_position = pos.tile;
     e.tile_offset = pos.offset;
     e.animation_state = animation_state;
-
-    return sample_tile(e);
+    return sample_tile_at(e.tile_index, e.tile_position, e.tile_offset);
 }
 
 fn sample_tile_at(

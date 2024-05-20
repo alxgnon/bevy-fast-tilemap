@@ -30,27 +30,7 @@ where
     fn build(&self, app: &mut App) {
         app.add_plugins(Material2dPlugin::<Map<UserData>>::default());
         let mut shaders = app.world.resource_mut::<Assets<Shader>>();
-
-        let mut code = SHADER_CODE.to_string();
-
-        code = code.replace(
-            "#[user_code]",
-            &self.user_code.clone().unwrap_or(
-                r#"
-            struct UserData {
-                dummy: u32,
-            };
-
-            fn sample_tile(in: ExtractIn) -> vec4<f32> {
-                return sample_tile_at(in.tile_index, in.tile_position, in.tile_offset);
-            }
-        "#
-                .to_string(),
-            ),
-        );
-
-        shaders.insert(SHADER_HANDLE, Shader::from_wgsl(code, file!()));
-
+        shaders.insert(SHADER_HANDLE, Shader::from_wgsl(SHADER_CODE, file!()));
         app.add_systems(
             Update,
             (
